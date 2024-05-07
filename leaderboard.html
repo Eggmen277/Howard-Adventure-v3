@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore-compat.js"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <style>
+    * {
+  font-size: 62, 5%;
+  box-sizing: border-box;
+  margin: 0;
+}
+
+body {
+  height: 100%;
+  width: 100%;
+  min-height: 100vh;
+  background-color: #fbfaff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+main {
+  margin-top: 5%;
+  margin-bottom: 5%;
+  width: 40rem;
+  background-color: #ffffff;
+  -webkit-box-shadow: 0px 5px 15px 8px #e4e7fb;
+  box-shadow: 0px 5px 15px 8px #e4e7fb;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-radius: 0.5rem;
+}
+
+#header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2.5rem 2rem;
+}
+
+h1 {
+  font-family: "Rubik", sans-serif;
+  font-size: 1.7rem;
+  color: #141a39;
+  text-transform: uppercase;
+  cursor: default;
+}
+
+#leaderboard {
+  width: 100%;
+  position: relative;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  color: #141a39;
+  cursor: default;
+}
+
+tr {
+  transition: all 0.2s ease-in-out;
+  border-radius: 0.2rem;
+}
+
+tr:not(:first-child):hover {
+  background-color: #fff;
+  transform: scale(1.1);
+  -webkit-box-shadow: 0px 5px 15px 8px #e4e7fb;
+  box-shadow: 0px 5px 15px 8px #e4e7fb;
+}
+
+tr:nth-child(odd) {
+  background-color: #f9f9f9;
+}
+
+tr:nth-child(1) {
+  color: #fff;
+}
+
+td {
+  height: 5rem;
+  font-family: "Rubik", sans-serif;
+  font-size: 1.4rem;
+  padding: 1rem 2rem;
+  position: relative;
+}
+
+.number {
+  width: 1rem;
+  font-size: 2.2rem;
+  font-weight: bold;
+  text-align: left;
+}
+
+.name {
+  text-align: left;
+  font-size: 1.2rem;
+}
+
+.points {
+  font-weight: bold;
+  font-size: 1.3rem;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.points:first-child {
+  width: 10rem;
+}
+
+.gold-medal {
+  height: 3rem;
+  margin-left: 1.5rem;
+}
+
+.ribbon {
+  width: 42rem;
+  height: 5.5rem;
+  top: -0.5rem;
+  background-color: #5c5be5;
+  position: absolute;
+  left: -1rem;
+  -webkit-box-shadow: 0px 15px 11px -6px #7a7a7d;
+  box-shadow: 0px 15px 11px -6px #7a7a7d;
+}
+
+.ribbon::before {
+  content: "";
+  height: 1.5rem;
+  width: 1.5rem;
+  bottom: -0.8rem;
+  left: 0.35rem;
+  transform: rotate(45deg);
+  background-color: #5c5be5;
+  position: absolute;
+  z-index: -1;
+}
+
+.ribbon::after {
+  content: "";
+  height: 1.5rem;
+  width: 1.5rem;
+  bottom: -0.8rem;
+  right: 0.35rem;
+  transform: rotate(45deg);
+  background-color: #5c5be5;
+  position: absolute;
+  z-index: -1;
+}
+
+.continue {
+  width: 11rem;
+  height: 3rem;
+  font-family: "Rubik", sans-serif;
+  font-size: 1.3rem;
+  color: #fff;
+  text-transform: uppercase;
+  background-color: #5c5be5;
+  border: 0;
+  border-bottom: 0.2rem solid #3838b8;
+  border-radius: 2rem;
+  cursor: pointer;
+}
+
+.continue:active {
+  border-bottom: 0;
+}
+
+#buttons {
+  width: 100%;
+  margin-top: 3rem;
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+@media (max-width: 740px) {
+    * {
+      font-size: 70%;
+    }
+}
+
+@media (max-width: 500px) {
+    * {
+      font-size: 55%;
+    }
+}
+
+@media (max-width: 390px) {
+    * {
+      font-size: 45%;
+    }
+}
+  </style>
+  <body>
+    <main>
+        <div id="header">
+          <h1>Ranking</h1>
+        </div>
+        <div id="leaderboard">
+          <div class="ribbon"></div>
+          <table id="leaderboard-table">
+          </table>
+          <div id="buttons">
+            <a href="./game.html"><button type="button" class="continue">Back</button></a>
+          </div>
+        </div>
+        
+      </main>
+  </body>
+  <script>
+const firebaseConfig = {
+  apiKey: "AIzaSyCBvBE4YXFGAgu50L7sjIHtstG5aabpQyo",
+  authDomain: "game-dev-project-database.firebaseapp.com",
+  projectId: "game-dev-project-database",
+  storageBucket: "game-dev-project-database.appspot.com",
+  messagingSenderId: "978313429551",
+  appId: "1:978313429551:web:da1eb3d1d6ec8da65cfcda",
+  measurementId: "G-J3H0M6FG9S"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+let players = [];
+
+db.collection("score").get().then((snapshot) => {
+  snapshot.docs.forEach((doc) => {
+    if(doc.data().Name == null || doc.data().Name == ""){
+      db.collection("score").doc(doc.id).delete();
+    } else {
+      const data = doc.data();
+      console.log(data)
+      const player = {
+        name: data.Name,
+        score: data.Score
+      };
+      players.push(player);
+    }
+  });
+  players.sort((a, b) => b.score - a.score);
+  console.log(players);
+  renderLeaderboard();
+});
+const leaderboardTable = document.getElementById('leaderboard-table');
+  
+function renderLeaderboard() {
+      players.forEach((player, index) => {
+        const row = document.createElement('tr');
+        row.style.opacity = '0';
+  
+        const numberCell = document.createElement('td');
+        numberCell.classList.add('number');
+        numberCell.textContent = index + 1;
+        row.appendChild(numberCell);
+  
+        const nameCell = document.createElement('td');
+        nameCell.classList.add('name');
+        nameCell.textContent = player.name;
+        row.appendChild(nameCell);
+  
+        const pointsCell = document.createElement('td');
+        pointsCell.classList.add('points');
+        pointsCell.textContent = player.score;
+        row.appendChild(pointsCell);
+  
+        leaderboardTable.appendChild(row);
+  
+        setTimeout(() => {
+          row.style.opacity = '1';
+        }, (index + 1) * 500);
+      });
+    }
+  
+    renderLeaderboard();
+  </script>
+</html>
